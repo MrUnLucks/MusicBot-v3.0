@@ -14,7 +14,6 @@ for (const file of commandFiles) {
 	commands.push(command.data.toJSON());
 }
 
-console.log(process.env.DISCORD_TOKEN)
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
 
 rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
