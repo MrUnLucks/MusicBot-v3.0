@@ -3,6 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { clientId, guildId } = require('./config.json');
+require("dotenv").config()
 
 const commands = [];//Array for storing all commands
 
@@ -13,7 +14,7 @@ for (const file of commandFiles) {
 	commands.push(command.data.toJSON());
 }
 
-
+console.log(process.env.DISCORD_TOKEN)
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
 
 rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
