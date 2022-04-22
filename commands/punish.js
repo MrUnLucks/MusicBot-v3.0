@@ -21,7 +21,7 @@ module.exports = {
     let resource = createAudioResource(
       require("path").join(__dirname, "../punizioneEsemplare.mp3")
     );
-    const connection = joinVoiceChannel({
+    joinVoiceChannel({
       channelId: voiceChannel,
       guildId: guild.id,
       adapterCreator: guild.voiceAdapterCreator,
