@@ -4,7 +4,7 @@ const fs = require("fs");
 require("dotenv").config()
 
 // Create a new client instance
-const client = new Client({ intents: 32767/*[Intents.FLAGS.GUILDS]*/ });
+const client = new Client({ intents: 33667/*[Intents.FLAGS.GUILDS]*/ });
 
 client.commands = new Collection();
 /*
