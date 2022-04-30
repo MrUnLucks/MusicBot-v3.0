@@ -12,7 +12,6 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
-    const player = new Player(interaction.client);
     const member = interaction.guild.members.cache.get(
       interaction.member.user.id
     );
@@ -23,12 +22,20 @@ module.exports = {
         ephemeral: true,
       });
     }
+    var player = new Player(interaction.client);
     //Create the query and check if one already exists
-    const queue = player.createQueue(interaction.guild, {
-      metadata: {
-        channel: interaction.channel,
-      },
-    });
+    let queue = null;
+    if (player.getQueue(interaction.guildId)) {
+      queue = player.getQueue(interaction.guildId);
+      console.log("get queue");
+    } else {
+      console.log("create queue");
+      queue = player.createQueue(interaction.guild, {
+        metadata: {
+          channel: interaction.channel,
+        },
+      });
+    }
     try {
       if (!queue.connection)
         await queue.connect(interaction.member.voice.channel);
@@ -42,25 +49,26 @@ module.exports = {
     //Read the user query
     const query = interaction.options.get("song").value;
     //Search the track
-    let track = await player
+    let message = "";
+    await player
       .search(query, {
         requestedBy: interaction.user,
       })
       .then((x) => {
-        interaction.reply({ content: `Now playing **${x.tracks[0]}**` });
-        return x.tracks[0];
+        message = `Found: **${x.tracks[0]}**`;
+        //Add to queue
+        queue.addTrack(x.tracks[0]);
+        //Play the queue if it is the first song
+      })
+      //Track not found
+      .catch(() => {
+        message = `${query} not found`;
       });
-    //Track not found
-    if (!track) {
-      return await interaction.followUp({
-        content: `❌ | Track **${query}** not found!`,
-      });
-    }
-    try {
-      queue.addTrack(track);
-    } catch (e) {
-      console.error(e);
-    }
-    if (!queue.playing) await queue.play();
+
+    interaction.reply({
+      content: message,
+      ephemeral: true,
+    });
+    queue.play();
   },
 };
